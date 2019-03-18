@@ -59,7 +59,7 @@ public class PermissionTestActivity extends AppCompatActivity implements View.On
         rxPermissions = new RxPermissions(this);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("我要权限");
+        builder.setTitle("我要权限(这是我们自己的弹窗，要求用户去系统页面打开权限)");
         builder.setMessage("求求大佬给个权限，点点权限，打开一下。");
         builder.setPositiveButton("好", new DialogInterface.OnClickListener() {
             @Override
