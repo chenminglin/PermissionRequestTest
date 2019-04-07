@@ -12,12 +12,15 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -75,6 +78,19 @@ public class PermissionTestActivity extends AppCompatActivity implements View.On
             }
         });
         alertDialog = builder.create();
+
+
+        Button btn_device_id = findViewById(R.id.btn_device_id);
+        final TextView tv_device_id = findViewById(R.id.tv_device_id);
+        btn_device_id.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String androidId = Settings.System.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+                tv_device_id.setText(""+androidId+"--"+ Build.SERIAL);
+            }
+        });
+
     }
 
     private void toSettingPage() {
@@ -122,11 +138,11 @@ public class PermissionTestActivity extends AppCompatActivity implements View.On
                         .subscribe(new Consumer<Permission>() {
                             @Override
                             public void accept(Permission permission) throws Exception {
-                                if(permission.name.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                                if (permission.name.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                                     storagePermission(permission);
-                                }else if(permission.name.equals(Manifest.permission.READ_PHONE_STATE)){
+                                } else if (permission.name.equals(Manifest.permission.READ_PHONE_STATE)) {
                                     phonePermission(permission);
-                                }else if(permission.name.equals(Manifest.permission.ACCESS_FINE_LOCATION)){
+                                } else if (permission.name.equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
                                     locationPermission(permission);
                                 }
                             }
@@ -139,7 +155,7 @@ public class PermissionTestActivity extends AppCompatActivity implements View.On
     }
 
 
-    private void storagePermission(Permission permission){
+    private void storagePermission(Permission permission) {
         if (permission.granted) {
             String path = savePic();
             Toast.makeText(PermissionTestActivity.this, "已经获得权限并向你的根目录放了个文件：" + path, Toast.LENGTH_LONG).show();
@@ -150,7 +166,8 @@ public class PermissionTestActivity extends AppCompatActivity implements View.On
             alertDialog.show();
         }
     }
-    private void phonePermission(Permission permission){
+
+    private void phonePermission(Permission permission) {
         if (permission.granted) {
             String imei = getImei();
             Toast.makeText(PermissionTestActivity.this, "已经获得权限，手机imei：" + imei, Toast.LENGTH_LONG).show();
@@ -163,7 +180,7 @@ public class PermissionTestActivity extends AppCompatActivity implements View.On
         }
     }
 
-    private void locationPermission(Permission permission){
+    private void locationPermission(Permission permission) {
         if (permission.granted) {
             openGPSSettings();
         } else if (permission.shouldShowRequestPermissionRationale) {
@@ -177,7 +194,7 @@ public class PermissionTestActivity extends AppCompatActivity implements View.On
     public String savePic() {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
         String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Angogo/";
-        if(!new File(path).exists()){
+        if (!new File(path).exists()) {
             new File(path).mkdirs();
         }
         String filePath = path + UUID.randomUUID().toString().replace("-", "");
@@ -208,10 +225,10 @@ public class PermissionTestActivity extends AppCompatActivity implements View.On
     public String getImei() {
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         String id;
-        try{
+        try {
             id = tm.getDeviceId();
             return id;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
